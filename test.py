@@ -1,23 +1,22 @@
 import pydirectinput as pdi
 import pyautogui
 import time
+import numpy
+import cv2
 from getBoundingBox import getBoundingBox
+import math
+from skimage.feature import match_template
+from PIL import Image,ImageShow
 
 #first get the bounding box
-#topLeft = getBoundingBox()
-
-#print("you have 5 seconds before calibration starts")
+topLeft = getBoundingBox()
+print("5 seconds before capture")
 time.sleep(5)
-
-# Aim Down Sight and wait a sec for it to aim
-pdi.keyDown('end')
-
-time.sleep(1)
-#save a screenshot
-#pyautogui.screenshot('test.png',region= (topLeft[0],topLeft[1],640,400))
-
-for i in range(13):
-    pdi.press('right')
-
-for i in range(8):
-    pdi.press('up')
+img =pyautogui.screenshot(region= (topLeft[0],topLeft[1]+80,640,320))
+processedImage = numpy.asarray(img)
+template = Image.open('FlagTemplate.png')
+processedTemplate = numpy.asarray(template)
+result = match_template(processedImage,processedTemplate)
+print(numpy.amax(result))
+ind = numpy.unravel_index(numpy.argmax(result, axis=None), result.shape)
+print(ind)
